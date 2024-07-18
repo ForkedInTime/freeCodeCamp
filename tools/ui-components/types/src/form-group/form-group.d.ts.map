@@ -1,0 +1,1 @@
+{"version":3,"file":"form-group.d.ts","sourceRoot":"","sources":["../../../src/form-group/form-group.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAwB,MAAM,OAAO,CAAC;AAC7C,OAAO,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAEzC,MAAM,MAAM,gBAAgB,GAAG,IAAI,CACjC,cAAc,EACd,WAAW,GAAG,iBAAiB,CAChC,CAAC;AACF,eAAO,MAAM,WAAW,iCAAsC,CAAC;AAI/D,eAAO,MAAM,SAAS,4DAMnB,cAAc,KAAG,WAmBnB,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"close-button.d.ts","sourceRoot":"","sources":["../../../src/close-button/close-button.tsx"],"names":[],"mappings":";AAEA,MAAM,WAAW,gBAAgB;IAC/B,SAAS,CAAC,EAAE,MAAM,CAAC;IACnB,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,OAAO,EAAE,MAAM,IAAI,CAAC;CACrB;AAED;;GAEG;AACH,wBAAgB,WAAW,CAAC,EAC1B,SAAS,EACT,KAAK,EACL,OAAO,EACR,EAAE,gBAAgB,GAAG,GAAG,CAAC,OAAO,CAmChC"}
