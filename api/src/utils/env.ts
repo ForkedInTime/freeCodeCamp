@@ -45,8 +45,9 @@ assert.ok(process.env.FREECODECAMP_NODE_ENV);
 assert.ok(isAllowedEnv(process.env.FREECODECAMP_NODE_ENV));
 assert.ok(process.env.EMAIL_PROVIDER);
 assert.ok(isAllowedProvider(process.env.EMAIL_PROVIDER));
+assert.ok(process.env.AUTH0_CLIENT_ID);
+assert.ok(process.env.AUTH0_CLIENT_SECRET);
 assert.ok(process.env.AUTH0_DOMAIN);
-assert.ok(process.env.AUTH0_AUDIENCE);
 assert.ok(process.env.API_LOCATION);
 assert.ok(process.env.FCC_ENABLE_SWAGGER_UI);
 assert.ok(process.env.FCC_ENABLE_DEV_LOGIN_MODE);
@@ -57,6 +58,11 @@ assert.ok(process.env.MONGOHQ_URL);
 assert.ok(process.env.COOKIE_SECRET);
 
 if (process.env.FREECODECAMP_NODE_ENV !== 'development') {
+  assert.notEqual(
+    process.env.FCC_ENABLE_EXAM_ENVIRONMENT,
+    'true',
+    'Exam environment is not ready for production.'
+  );
   assert.ok(process.env.SES_ID);
   assert.ok(process.env.SES_SECRET);
   assert.notEqual(
@@ -96,6 +102,11 @@ if (process.env.FREECODECAMP_NODE_ENV !== 'development') {
     'The Stripe secret should be changed from the default value.'
   );
   assert.notEqual(process.env.NODE_ENV, 'test');
+  assert.notEqual(
+    process.env.AUTH0_CLIENT_SECRET,
+    'client_secret_from_auth0_dashboard',
+    'The Auth0 client secret should be changed from the default value.'
+  );
 }
 
 export const HOME_LOCATION = process.env.HOME_LOCATION;
@@ -109,8 +120,9 @@ export const MONGOHQ_URL =
     : process.env.MONGOHQ_URL;
 
 export const FREECODECAMP_NODE_ENV = process.env.FREECODECAMP_NODE_ENV;
+export const AUTH0_CLIENT_ID = process.env.AUTH0_CLIENT_ID;
 export const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN;
-export const AUTH0_AUDIENCE = process.env.AUTH0_AUDIENCE;
+export const AUTH0_CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET;
 export const PORT = process.env.PORT || '3000';
 export const HOST = process.env.HOST || 'localhost';
 export const API_LOCATION = process.env.API_LOCATION;
@@ -118,6 +130,10 @@ export const FCC_ENABLE_SWAGGER_UI =
   process.env.FCC_ENABLE_SWAGGER_UI === 'true';
 export const FCC_ENABLE_DEV_LOGIN_MODE =
   process.env.FCC_ENABLE_DEV_LOGIN_MODE === 'true';
+export const FCC_ENABLE_SHADOW_CAPTURE =
+  process.env.FCC_ENABLE_SHADOW_CAPTURE === 'true';
+export const FCC_ENABLE_EXAM_ENVIRONMENT =
+  process.env.FCC_ENABLE_EXAM_ENVIRONMENT === 'true';
 export const SENTRY_DSN =
   process.env.SENTRY_DSN === 'dsn_from_sentry_dashboard'
     ? ''

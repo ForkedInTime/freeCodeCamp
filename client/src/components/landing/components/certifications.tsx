@@ -1,11 +1,18 @@
 import React from 'react';
-import { Col } from '@freecodecamp/ui';
+import { Col, Spacer } from '@freecodecamp/ui';
 
 import Map from '../../Map/index';
-import { Spacer } from '../../helpers';
+import { type SuperBlocks } from '../../../../../shared/config/curriculum';
 import BigCallToAction from './big-call-to-action';
 
-const Certifications = (): JSX.Element => {
+const Certifications = ({
+  allChallenges
+}: {
+  allChallenges: {
+    id: string;
+    superBlock: SuperBlocks;
+  }[];
+}): JSX.Element => {
   return (
     <Col
       className='certification-section'
@@ -15,10 +22,10 @@ const Certifications = (): JSX.Element => {
       smOffset={1}
       xs={12}
     >
-      <Map forLanding={true} />
-      <Spacer size='medium' />
+      <Map allChallenges={allChallenges} forLanding={true} />
+      <Spacer size='m' />
       <BigCallToAction />
-      <Spacer size='medium' />
+      <Spacer size='m' />
     </Col>
   );
 };

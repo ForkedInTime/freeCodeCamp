@@ -5,6 +5,7 @@ import type {
   ChallengeFile,
   ChallengeFiles,
   CompletedChallenge,
+  ExamTokenResponse,
   GenerateExamResponseWithData,
   SavedChallenge,
   SavedChallengeFile,
@@ -59,7 +60,7 @@ export function post<T = void>(
 
 function put<T = void>(
   path: string,
-  body?: unknown
+  body: unknown
 ): Promise<ResponseWithData<T>> {
   return request('PUT', path, body);
 }
@@ -243,7 +244,7 @@ export function addDonation(body: Donation): Promise<ResponseWithData<void>> {
 }
 
 export function updateStripeCard() {
-  return put('/donate/update-stripe-card');
+  return put('/donate/update-stripe-card', {});
 }
 
 export function postChargeStripe(
@@ -256,6 +257,12 @@ export function postChargeStripeCard(
   body: Donation
 ): Promise<ResponseWithData<void>> {
   return post('/donate/charge-stripe-card', body);
+}
+
+export function generateExamToken(): Promise<
+  ResponseWithData<ExamTokenResponse>
+> {
+  return post('/user/exam-environment/token', {});
 }
 
 type PaymentIntentResponse = Promise<

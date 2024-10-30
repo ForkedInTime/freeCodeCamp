@@ -13,6 +13,8 @@ export const createFiles = createAction(
         challengeFile.contents,
         challengeFile.editableRegionBoundaries
       ),
+      editableRegionBoundaries:
+        challengeFile.editableRegionBoundaries?.slice() ?? [],
       seedEditableRegionBoundaries:
         challengeFile.editableRegionBoundaries?.slice() ?? []
     }))
@@ -24,6 +26,7 @@ export const updateTests = createAction(actionTypes.updateTests);
 export const cancelTests = createAction(actionTypes.cancelTests);
 export const initConsole = createAction(actionTypes.initConsole);
 export const initLogs = createAction(actionTypes.initLogs);
+export const initVisibleEditors = createAction(actionTypes.initVisibleEditors);
 export const updateChallengeMeta = createAction(
   actionTypes.updateChallengeMeta
 );

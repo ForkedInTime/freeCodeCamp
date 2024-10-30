@@ -34,20 +34,20 @@ Your application should show different messages depending on the price of the it
 |    Twenty Dollars   |    $20 (TWENTY)    |
 | One Hundred Dollars | $100 (ONE HUNDRED) |
 
-**Objective:** Build an app that is functionally similar to <a href="https://cash-register.freecodecamp.rocks" target="_blank" rel="noopener noreferrer nofollow">https://cash-register.freecodecamp.rocks</a>
+**Objective:** Build an app that is functionally similar to <a href="https://cash-register.freecodecamp.rocks" target="_blank" rel="noopener noreferrer nofollow">https://cash-register.freecodecamp.rocks</a>.
 
 **User Stories:**
 
-1. You should have an `input` element with an `id` of `"cash"`
-1. You should have a `div`, `span` or `p` element with an `id` of `"change-due"`
-1. You should have a `button` element with an `id` of `"purchase-btn"`
-1. When the value in the `#cash` element is less than `price`, an alert should appear with the text `"Customer does not have enough money to purchase the item"`
-1. When the value in the `#cash` element is equal to `price`, the value in the `#change-due` element should be `"No change due - customer paid with exact cash"`
-1. When `price` is `19.5`, the value in the `#cash` element is `20`, `cid` is `[["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]`, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: OPEN QUARTER: $0.5"`
-1. When `price` is `3.26`, the value in the `#cash` element is `100`, `cid` is `[["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]`, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: OPEN TWENTY: $60 TEN: $20 FIVE: $15 ONE: $1 QUARTER: $0.5 DIME: $0.2 PENNY: $0.04"`
-1. When `price` is `19.5`, the value in the `#cash` element is `20`, `cid` is `[["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]`, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: INSUFFICIENT_FUNDS"`
-1. When `price` is `19.5`, the value in the `#cash` element is `20`, `cid` is `[["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 1], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]`, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: INSUFFICIENT_FUNDS"`
-1. When `price` is `19.5`, the value in the `#cash` element is `20`, `cid` is `[["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]`, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: CLOSED PENNY: $0.5"`
+1. You should have an `input` element with an `id` of `"cash"`.
+1. You should have a `div`, `span` or `p` element with an `id` of `"change-due"`.
+1. You should have a `button` element with an `id` of `"purchase-btn"`.
+1. When the value in the `#cash` element is less than `price`, an alert should appear with the text `"Customer does not have enough money to purchase the item"`.
+1. When the value in the `#cash` element is equal to `price`, the value in the `#change-due` element should be `"No change due - customer paid with exact cash"`.
+1. When `price` is `19.5`, the value in the `#cash` element is `20`, `cid` is `[["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]`, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: OPEN QUARTER: $0.5"`.
+1. When `price` is `3.26`, the value in the `#cash` element is `100`, `cid` is `[["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]`, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: OPEN TWENTY: $60 TEN: $20 FIVE: $15 ONE: $1 QUARTER: $0.5 DIME: $0.2 PENNY: $0.04"`.
+1. When `price` is `19.5`, the value in the `#cash` element is `20`, `cid` is `[["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]`, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: INSUFFICIENT_FUNDS"`.
+1. When `price` is `19.5`, the value in the `#cash` element is `20`, `cid` is `[["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 1], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]`, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: INSUFFICIENT_FUNDS"`.
+1. When `price` is `19.5`, the value in the `#cash` element is `20`, `cid` is `[["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]`, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: CLOSED PENNY: $0.5"`.
 
 Fulfill the user stories and pass all the tests below to complete this project. Give it your own personal style. Happy Coding!
 
@@ -372,7 +372,7 @@ assert.strictEqual(
 );
 ```
 
-When `price` is less than the value in the `#cash` element, total cash in drawer `cid` is greater than change due, individual denomination amounts make impossible to return needed change, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: INSUFFICIENT_FUNDS"`
+When the `price` is less than the value in the `#cash` element and the total cash in the drawer (`cid`) is insufficient to cover the change due, the purchase should not proceed. When the `#purchase-btn` is clicked under these conditions, the `#change-due` element should display `"Status: INSUFFICIENT_FUNDS"`.
 
 ```js
 const cashInput = document.getElementById('cash');
@@ -387,26 +387,22 @@ price = (randomCash - randomChange) / 100;
 cashInput.value = `${randomCash / 100}`;
 
 let changeLeft = randomChange;
-const _expectedChangeDue = [];
 const _cashInDrawer = [];
 for (const [denominationName, denomination] of _money) {
   const maxCountInChange = Math.floor(changeLeft / denomination);
-  // If denomination can complete required changeLeft, available amount in drawer cannot
-  // equal the maximum. Otherwise count in drawer can be greater than maximum count in change.
-  const drawerCount = _randomNumber(
-    changeLeft % denomination === 0 ? Math.min(15, maxCountInChange - 1) : 15
-  );
+  // Amount lower than maximum (adjusted to changeLeft) will ensure total in drawer
+  // will be lower than needed change.
+  const drawerCount = _randomNumber(Math.max(0, Math.min(15, maxCountInChange - 1)));
   const amountInDrawer = drawerCount * denomination;
   _cashInDrawer.push([denominationName, amountInDrawer / 100]);
-  const changeCount = Math.min(drawerCount, maxCountInChange);
-  if (denomination <= changeLeft && changeCount > 0) {
-    changeLeft -= changeCount * denomination;
+  if (denomination <= changeLeft && drawerCount > 0) {
+    changeLeft -= amountInDrawer;
   }
 }
 
-// Less pennies than changeLeft makes impossible to return change due.
-const drawerCount = _randomNumber(Math.min(15, changeLeft - 1));
-_cashInDrawer.push(['PENNY', drawerCount / 100]);
+// Less pennies than changeLeft makes sure total cash in drawer is less than change due.
+const count = _randomNumber(Math.min(15, changeLeft - 1));
+_cashInDrawer.push(['PENNY', count / 100]);
 
 cid = _cashInDrawer.reverse();
 
@@ -447,7 +443,8 @@ assert.strictEqual(
 );
 ```
 
-When `price` is less than the value in the `#cash` element, total cash in drawer `cid` is less than the change due, and the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: INSUFFICIENT_FUNDS"`.
+
+When `price` is less than the value in the `#cash` element, total cash in drawer `cid` is greater than change due, but the individual denomination amounts make it impossible to return needed change, when the `#purchase-btn` element is clicked, the value in the `#change-due` element should be `"Status: INSUFFICIENT_FUNDS"`
 
 ```js
 const cashInput = document.getElementById('cash');
@@ -462,22 +459,27 @@ price = (randomCash - randomChange) / 100;
 cashInput.value = `${randomCash / 100}`;
 
 let changeLeft = randomChange;
+const _expectedChangeDue = [];
 const _cashInDrawer = [];
 for (const [denominationName, denomination] of _money) {
   const maxCountInChange = Math.floor(changeLeft / denomination);
-  // Amount lower than maximum (adjusted to changeLeft) will ensure total in drawer
-  // will be lower than needed change.
-  const drawerCount = _randomNumber(Math.max(0, Math.min(15, maxCountInChange - 1)));
+  // If denomination can complete required changeLeft, available amount in drawer cannot
+  // equal the maximum. Otherwise count in drawer can be greater than maximum count in change.
+  let defaultAmount = denomination < 100 ? 3 : 15
+  const drawerCount = _randomNumber(
+    changeLeft % denomination === 0 ? Math.min(defaultAmount, maxCountInChange - 1) : defaultAmount
+  );
   const amountInDrawer = drawerCount * denomination;
   _cashInDrawer.push([denominationName, amountInDrawer / 100]);
-  if (denomination <= changeLeft && drawerCount > 0) {
-    changeLeft -= amountInDrawer;
+  const changeCount = Math.min(drawerCount, maxCountInChange);
+  if (denomination <= changeLeft && changeCount > 0) {
+    changeLeft -= changeCount * denomination;
   }
 }
 
-// Less pennies than changeLeft makes sure total cash in drawer is less than change due.
-const count = _randomNumber(Math.min(15, changeLeft - 1));
-_cashInDrawer.push(['PENNY', count / 100]);
+// Less pennies than changeLeft makes impossible to return change due.
+const drawerCount = _randomNumber(Math.min(15, changeLeft - 1));
+_cashInDrawer.push(['PENNY', drawerCount / 100]);
 
 cid = _cashInDrawer.reverse();
 

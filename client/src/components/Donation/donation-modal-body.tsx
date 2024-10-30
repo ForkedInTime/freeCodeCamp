@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Col, Row, Modal } from '@freecodecamp/ui';
+import { Col, Row, Modal, Spacer } from '@freecodecamp/ui';
 import { closeDonationModal } from '../../redux/actions';
-import { Spacer } from '../helpers';
 import { PaymentContext } from '../../../../shared/config/donation-settings'; //
 import donationAnimation from '../../assets/images/donation-bear-animation.svg';
 import supporterBear from '../../assets/images/supporter-bear.svg';
@@ -16,6 +15,7 @@ type DonationModalBodyProps = {
   activeDonors?: number;
   closeDonationModal: typeof closeDonationModal;
   recentlyClaimedBlock: RecentlyClaimedBlock;
+  setCanClose: (canClose: boolean) => void;
 };
 
 const Illustration = () => {
@@ -57,7 +57,7 @@ function ModalHeader({
                   )
                 })}
               </b>
-              <Spacer size='small' />
+              <Spacer size='xs' />
             </>
           )}
 
@@ -108,7 +108,7 @@ const Benefits = ({ setShowForm }: { setShowForm: (arg: boolean) => void }) => {
     <Row className={'donate-btn-group'}>
       <Col xs={12}>
         <ModalBenefitList />
-        <Spacer size='small' />
+        <Spacer size='xs' />
         <button
           className='text-center confirm-donation-btn donate-btn-group'
           type='submit'
@@ -116,7 +116,7 @@ const Benefits = ({ setShowForm }: { setShowForm: (arg: boolean) => void }) => {
         >
           {t('donate.become-supporter')}
         </button>
-        <Spacer size='medium' />
+        <Spacer size='m' />
       </Col>
     </Row>
   );
@@ -194,7 +194,7 @@ const BecomeASupporterConfirmation = ({
         donationAttempted={donationAttempted}
         showForm={showForm}
       />
-      <Spacer size='small' />
+      <Spacer size='xs' />
       {showForm ? (
         <MultiTierDonationForm
           setShowHeaderAndFooter={setShowHeaderAndFooter}
@@ -217,7 +217,8 @@ const BecomeASupporterConfirmation = ({
 
 function DonationModalBody({
   closeDonationModal,
-  recentlyClaimedBlock
+  recentlyClaimedBlock,
+  setCanClose
 }: DonationModalBodyProps): JSX.Element {
   const [donationAttempted, setDonationAttempted] = useState(false);
   const [showHeaderAndFooter, setShowHeaderAndFooter] = useState(true);
@@ -245,6 +246,12 @@ function DonationModalBody({
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (secondsRemaining === 0) {
+      setCanClose(true);
+    }
+  }, [secondsRemaining, setCanClose]);
+
   return (
     <Modal.Body borderless alignment='start'>
       <div aria-live='polite' className='donation-modal'>
@@ -268,5 +275,6 @@ function DonationModalBody({
 }
 
 DonationModalBody.displayName = 'DonationModalBody';
+Benefits.displayName = 'DonationModalBenefits';
 
 export default DonationModalBody;

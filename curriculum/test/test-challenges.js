@@ -46,6 +46,10 @@ const { getLines } = require('../../shared/utils/get-lines');
 const { getChallengesForLang, getMetaForBlock } = require('../get-challenges');
 const { challengeSchemaValidator } = require('../schema/challenge-schema');
 const { testedLang, getSuperOrder } = require('../utils');
+const {
+  createHeader,
+  testId
+} = require('../../client/src/templates/Challenges/utils/frame');
 const ChallengeTitles = require('./utils/challenge-titles');
 const MongoIds = require('./utils/mongo-ids');
 const createPseudoWorker = require('./utils/pseudo-worker');
@@ -77,6 +81,7 @@ const handleRejection = err => {
 
 const dom = new jsdom.JSDOM('');
 global.document = dom.window.document;
+global.DOMParser = dom.window.DOMParser;
 
 const oldRunnerFail = Mocha.Runner.prototype.fail;
 Mocha.Runner.prototype.fail = function (test, err) {
@@ -282,16 +287,8 @@ function populateTestsForLang({ lang, challenges, meta, superBlocks }) {
 
   if (!process.env.FCC_BLOCK && !process.env.FCC_CHALLENGE_ID) {
     describe('Assert meta order', function () {
-      /** This array can be used to skip a superblock - we'll use this
-       * when we are working on the new project-based curriculum for
-       * a superblock (because keeping those challenges in order is
-       * tricky and needs cleaning up before deploying).
-       */
-      const superBlocksUnderDevelopment = ['scientific-computing-with-python'];
       const superBlocks = new Set([
-        ...Object.values(meta)
-          .map(el => el.superBlock)
-          .filter(el => !superBlocksUnderDevelopment.includes(el))
+        ...Object.values(meta).map(el => el.superBlock)
       ]);
       superBlocks.forEach(superBlock => {
         const filteredMeta = Object.values(meta)
@@ -316,9 +313,12 @@ function populateTestsForLang({ lang, challenges, meta, superBlocks }) {
           );
         });
         filteredMeta.forEach((meta, index) => {
-          it(`${meta.superBlock} ${meta.name} must be in order`, function () {
-            assert.equal(meta.order, index);
-          });
+          // ignore block order for upcoming blocks
+          if (!meta.isUpcomingChange) {
+            it(`${meta.superBlock} ${meta.name} must be in order`, function () {
+              assert.equal(meta.order, index);
+            });
+          }
         });
       });
     });
@@ -668,7 +668,7 @@ async function getWorkerEvaluator(build, sources, code, runsInPythonWorker) {
 
 async function initializeTestRunner(build, sources, code, loadEnzyme) {
   await page.reload();
-  await page.setContent(build);
+  await page.setContent(createHeader(testId) + build);
   await page.evaluate(
     async (code, sources, loadEnzyme) => {
       const getUserInput = fileName => sources[fileName];

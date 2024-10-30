@@ -9,14 +9,19 @@ import {
   stubTrue
 } from 'lodash-es';
 
-import sassData from '../../../../../client/config/browser-scripts/sass-compile.json';
+import sassData from '../../../../config/browser-scripts/sass-compile.json';
 import {
   transformContents,
   transformHeadTailAndContents,
   setExt,
-  compileHeadTail
+  compileHeadTail,
+  createSource
 } from '../../../../../shared/utils/polyvinyl';
 import { WorkerExecutor } from '../utils/worker-executor';
+import {
+  compileTypeScriptCode,
+  initTypeScriptService
+} from '../utils/typescript-worker-handler';
 
 const { filename: sassCompile } = sassData;
 
@@ -96,12 +101,13 @@ const NBSPReg = new RegExp(String.fromCharCode(160), 'g');
 
 const testJS = matchesProperty('ext', 'js');
 const testJSX = matchesProperty('ext', 'jsx');
+const testTypeScript = matchesProperty('ext', 'ts');
 const testHTML = matchesProperty('ext', 'html');
-const testHTML$JS$JSX = overSome(testHTML, testJS, testJSX);
+const testHTML$JS$JSX$TS = overSome(testHTML, testJS, testJSX, testTypeScript);
 
 const replaceNBSP = cond([
   [
-    testHTML$JS$JSX,
+    testHTML$JS$JSX$TS,
     partial(transformContents, contents => contents.replace(NBSPReg, ' '))
   ],
   [stubTrue, identity]
@@ -111,19 +117,19 @@ const babelTransformer = loopProtectOptions => {
   return cond([
     [
       testJS,
-      async code => {
+      async challengeFile => {
         await loadBabel();
         await loadPresetEnv();
         const babelOptions = getBabelOptions(presetsJS, loopProtectOptions);
         return transformHeadTailAndContents(
           babelTransformCode(babelOptions),
-          code
+          challengeFile
         );
       }
     ],
     [
       testJSX,
-      async code => {
+      async challengeFile => {
         await loadBabel();
         await loadPresetReact();
         const babelOptions = getBabelOptions(presetsJSX, loopProtectOptions);
@@ -133,7 +139,22 @@ const babelTransformer = loopProtectOptions => {
             babelTransformCode(babelOptions)
           ),
           partial(setExt, 'js')
-        )(code);
+        )(challengeFile);
+      }
+    ],
+    [
+      testTypeScript,
+      async challengeFile => {
+        await loadBabel();
+        await initTypeScriptService();
+        const babelOptions = getBabelOptions(presetsJS, loopProtectOptions);
+        return flow(
+          partial(transformHeadTailAndContents, compileTypeScriptCode),
+          partial(
+            transformHeadTailAndContents,
+            babelTransformCode(babelOptions)
+          )
+        )(challengeFile);
       }
     ],
     [stubTrue, identity]
@@ -177,9 +198,17 @@ async function transformSASS(documentElement) {
 async function transformScript(documentElement) {
   await loadBabel();
   await loadPresetEnv();
+  await loadPresetReact();
   const scriptTags = documentElement.querySelectorAll('script');
   scriptTags.forEach(script => {
-    script.innerHTML = babelTransformCode(getBabelOptions(presetsJS))(
+    const isBabel = script.type === 'text/babel';
+    // TODO: make the use of JSX conditional on more than just the script type.
+    // It should only be used for React challenges since it would be confusing
+    // for learners to see the results of a transformation they didn't ask for.
+    const options = isBabel ? presetsJSX : presetsJS;
+
+    if (isBabel) script.removeAttribute('type'); // otherwise the browser will ignore the script
+    script.innerHTML = babelTransformCode(getBabelOptions(options))(
       script.innerHTML
     );
   });
@@ -188,7 +217,7 @@ async function transformScript(documentElement) {
 // This does the final transformations of the files needed to embed them into
 // HTML.
 export const embedFilesInHtml = async function (challengeFiles) {
-  const { indexHtml, stylesCss, scriptJs, indexJsx } =
+  const { indexHtml, stylesCss, scriptJs, indexJsx, indexTs } =
     challengeFilesToObject(challengeFiles);
 
   const embedStylesAndScript = (documentElement, contentDocument) => {
@@ -198,6 +227,10 @@ export const embedFilesInHtml = async function (challengeFiles) {
     const script =
       documentElement.querySelector('script[src="script.js"]') ??
       documentElement.querySelector('script[src="./script.js"]');
+
+    const tsScript =
+      documentElement.querySelector('script[src="index.ts"]') ??
+      documentElement.querySelector('script[src="./index.ts"]');
     if (link) {
       const style = contentDocument.createElement('style');
       style.classList.add('fcc-injected-styles');
@@ -213,13 +246,16 @@ export const embedFilesInHtml = async function (challengeFiles) {
       script.removeAttribute('src');
       script.setAttribute('data-src', 'script.js');
     }
-    return {
-      contents: documentElement.innerHTML
-    };
+    if (tsScript) {
+      tsScript.innerHTML = indexTs?.contents;
+      tsScript.removeAttribute('src');
+      tsScript.setAttribute('data-src', 'index.ts');
+    }
+    return documentElement.innerHTML;
   };
 
   if (indexHtml) {
-    const { contents } = await transformWithFrame(
+    const contents = await parseAndTransform(
       embedStylesAndScript,
       indexHtml.contents
     );
@@ -228,8 +264,10 @@ export const embedFilesInHtml = async function (challengeFiles) {
     return [challengeFiles, `<script>${indexJsx.contents}</script>`];
   } else if (scriptJs) {
     return [challengeFiles, `<script>${scriptJs.contents}</script>`];
+  } else if (indexTs) {
+    return [challengeFiles, `<script>${indexTs.contents}</script>`];
   } else {
-    throw Error('No html or js(x) file found');
+    throw Error('No html, ts or js(x) file found');
   }
 };
 
@@ -240,35 +278,15 @@ function challengeFilesToObject(challengeFiles) {
   );
   const stylesCss = challengeFiles.find(file => file.fileKey === 'stylescss');
   const scriptJs = challengeFiles.find(file => file.fileKey === 'scriptjs');
-  return { indexHtml, indexJsx, stylesCss, scriptJs };
+  const indexTs = challengeFiles.find(file => file.fileKey === 'indexts');
+  return { indexHtml, indexJsx, stylesCss, scriptJs, indexTs };
 }
 
-const transformWithFrame = async function (transform, contents) {
-  // we use iframe here since file.contents is destined to be be inserted into
-  // the root of an iframe.
-  const frame = document.createElement('iframe');
-  frame.style = 'display: none';
-  let out = { contents };
-  try {
-    // the frame needs to be inserted into the document to create the html
-    // element
-    document.body.appendChild(frame);
-    // replace the root element with user code
-    frame.contentDocument.documentElement.innerHTML = contents;
-    // grab the contents now, in case the transformation fails
-    out = { contents: frame.contentDocument.documentElement.innerHTML };
-    // it's important to pass around the documentElement and NOT the frame
-    // itself. It appears that the frame's documentElement can get replaced by a
-    // blank documentElement without the contents. This seems only to happen on
-    // Firefox.
-    out = await transform(
-      frame.contentDocument.documentElement,
-      frame.contentDocument
-    );
-  } finally {
-    document.body.removeChild(frame);
-  }
-  return out;
+const parseAndTransform = async function (transform, contents) {
+  const parser = new DOMParser();
+  const newDoc = parser.parseFromString(contents, 'text/html');
+
+  return await transform(newDoc.documentElement, newDoc);
 };
 
 const transformHtml = async function (file) {
@@ -277,10 +295,10 @@ const transformHtml = async function (file) {
       transformSASS(documentElement),
       transformScript(documentElement)
     ]);
-    return { contents: documentElement.innerHTML };
+    return documentElement.innerHTML;
   };
 
-  const { contents } = await transformWithFrame(transform, file.contents);
+  const contents = await parseAndTransform(transform, file.contents);
   return transformContents(() => contents, file);
 };
 
@@ -290,6 +308,7 @@ const htmlTransformer = cond([
 ]);
 
 export const getTransformers = loopProtectOptions => [
+  createSource,
   replaceNBSP,
   babelTransformer(loopProtectOptions),
   partial(compileHeadTail, ''),
@@ -297,6 +316,7 @@ export const getTransformers = loopProtectOptions => [
 ];
 
 export const getPythonTransformers = () => [
+  createSource,
   replaceNBSP,
   partial(compileHeadTail, '')
 ];

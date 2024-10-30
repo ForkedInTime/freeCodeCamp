@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal } from '@freecodecamp/ui';
-
-import { Spacer } from '../helpers';
+import {
+  Button,
+  ControlLabel,
+  FormControl,
+  FormGroup,
+  Modal,
+  Spacer
+} from '@freecodecamp/ui';
 
 type DeleteModalProps = {
   delete: () => void;
@@ -14,6 +19,14 @@ function DeleteModal(props: DeleteModalProps): JSX.Element {
   const { show, onHide } = props;
   const email = 'support@freecodecamp.org';
   const { t } = useTranslation();
+  const [verifyText, setVerifyText] = useState('');
+
+  const handleVerifyTextChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setVerifyText(event.target.value);
+  };
+
   return (
     <Modal onClose={onHide} open={show} variant='danger' size='large'>
       <Modal.Header showCloseButton={true} closeButtonClassNames='close'>
@@ -40,12 +53,27 @@ function DeleteModal(props: DeleteModalProps): JSX.Element {
         >
           {t('settings.danger.nevermind')}
         </Button>
-        <Spacer size='small' />
+        <Spacer size='xs' />
+        <FormGroup controlId='verify-delete'>
+          <ControlLabel htmlFor='verify-delete-input'>
+            {t('settings.danger.verify-text', {
+              verifyText: t('settings.danger.verify-delete-text')
+            })}
+          </ControlLabel>
+          <Spacer size='xs' />
+          <FormControl
+            onChange={handleVerifyTextChange}
+            value={verifyText}
+            id='verify-delete-input'
+          />
+        </FormGroup>
+        <Spacer size='xs' />
         <Button
           block={true}
           size='large'
           variant='danger'
           onClick={props.delete}
+          disabled={verifyText !== t('settings.danger.verify-delete-text')}
           type='button'
         >
           {t('settings.danger.certain')}

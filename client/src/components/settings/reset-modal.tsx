@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from '@freecodecamp/ui';
-
-import { Spacer } from '../helpers';
+import {
+  Button,
+  ControlLabel,
+  FormControl,
+  FormGroup,
+  Modal,
+  Spacer
+} from '@freecodecamp/ui';
 
 type ResetModalProps = {
   onHide: () => void;
@@ -13,6 +18,13 @@ type ResetModalProps = {
 function ResetModal(props: ResetModalProps): JSX.Element {
   const { t } = useTranslation();
   const { show, onHide } = props;
+  const [verifyText, setVerifyText] = useState('');
+
+  const handleVerifyTextChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setVerifyText(event.target.value);
+  };
 
   return (
     <Modal size='large' onClose={onHide} variant='danger' open={show}>
@@ -39,11 +51,26 @@ function ResetModal(props: ResetModalProps): JSX.Element {
         >
           {t('settings.danger.nevermind-2')}
         </Button>
-        <Spacer size='small' />
+        <Spacer size='xs' />
+        <FormGroup controlId='verify-reset'>
+          <ControlLabel htmlFor='verify-reset-input'>
+            {t('settings.danger.verify-text', {
+              verifyText: t('settings.danger.verify-reset-text')
+            })}
+          </ControlLabel>
+          <Spacer size='xs' />
+          <FormControl
+            onChange={handleVerifyTextChange}
+            value={verifyText}
+            id='verify-reset-input'
+          />
+        </FormGroup>
+        <Spacer size='xs' />
         <Button
           block={true}
           size='large'
           variant='danger'
+          disabled={verifyText !== t('settings.danger.verify-reset-text')}
           onClick={props.reset}
           type='button'
         >

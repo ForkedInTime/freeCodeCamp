@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link as GatsbyLink } from 'gatsby';
 import { Button } from '@freecodecamp/ui';
 
-export type ButtonSize = 'small' | 'medium' | 'large';
+import Link from './link';
+
+type ButtonSize = 'small' | 'medium' | 'large';
 
 interface Props extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   children: React.ReactNode;
@@ -67,13 +68,8 @@ export const ButtonLink = ({
   }
 
   return (
-    <GatsbyLink
-      className={gatsbyLinkCls}
-      to={href}
-      target={target}
-      onClick={onClick}
-    >
+    <Link className={gatsbyLinkCls} to={href} target={target} onClick={onClick}>
       {children}
-    </GatsbyLink>
+    </Link>
   );
 };

@@ -7,6 +7,7 @@ import {
   COOKIE_SECRET,
   FREECODECAMP_NODE_ENV
 } from '../utils/env';
+import { CSRF_COOKIE, CSRF_SECRET_COOKIE } from './csrf';
 
 export { type CookieSerializeOptions } from '@fastify/cookie';
 
@@ -68,11 +69,11 @@ const cookies: FastifyPluginCallback = (fastify, _options, done) => {
 
   void fastify.decorateReply('clearOurCookies', function () {
     void this.clearCookie('jwt_access_token');
-    void this.clearCookie('_csrf');
-    void this.clearCookie('csrf_token');
+    void this.clearCookie(CSRF_SECRET_COOKIE);
+    void this.clearCookie(CSRF_COOKIE);
   });
 
   done();
 };
 
-export default fp(cookies);
+export default fp(cookies, { name: 'cookies' });

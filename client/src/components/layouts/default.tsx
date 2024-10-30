@@ -5,11 +5,17 @@ import { useMediaQuery } from 'react-responsive';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { createSelector } from 'reselect';
-import { useStaticQuery, graphql } from 'gatsby';
+import { Spacer } from '@freecodecamp/ui';
+import envData, { clientLocale } from '../../../config/env.json';
 
 import latoBoldURL from '../../../static/fonts/lato/Lato-Bold.woff';
 import latoLightURL from '../../../static/fonts/lato/Lato-Light.woff';
 import latoRegularURL from '../../../static/fonts/lato/Lato-Regular.woff';
+
+import jpSansBoldURL from '../../../static/fonts/noto-sans-japanese/NotoSansJP-Bold.woff';
+import jpSansLightURL from '../../../static/fonts/noto-sans-japanese/NotoSansJP-Light.woff';
+import jpSansRegularURL from '../../../static/fonts/noto-sans-japanese/NotoSansJP-Regular.woff';
+
 import hackZeroSlashBoldURL from '../../../static/fonts/hack-zeroslash/Hack-ZeroSlash-Bold.woff';
 import hackZeroSlashItalicURL from '../../../static/fonts/hack-zeroslash/Hack-ZeroSlash-Italic.woff';
 import hackZeroSlashRegularURL from '../../../static/fonts/hack-zeroslash/Hack-ZeroSlash-Regular.woff';
@@ -18,8 +24,7 @@ import { isBrowser } from '../../../utils';
 import {
   fetchUser,
   onlineStatusChange,
-  serverStatusChange,
-  updateAllChallengesInfo
+  serverStatusChange
 } from '../../redux/actions';
 import {
   isSignedInSelector,
@@ -30,12 +35,7 @@ import {
   userFetchStateSelector
 } from '../../redux/selectors';
 
-import {
-  UserFetchState,
-  User,
-  AllChallengeNode,
-  CertificateNode
-} from '../../redux/prop-types';
+import { UserFetchState, User } from '../../redux/prop-types';
 import BreadCrumb from '../../templates/Challenges/components/bread-crumb';
 import Flash from '../Flash';
 import { flashMessageSelector, removeFlashMessage } from '../Flash/redux';
@@ -44,12 +44,11 @@ import StagingWarningModal from '../staging-warning-modal';
 import Footer from '../Footer';
 import Header from '../Header';
 import OfflineWarning from '../OfflineWarning';
-import { Loader, Spacer } from '../helpers';
+import { Loader } from '../helpers';
 import {
   MAX_MOBILE_WIDTH,
   EX_SMALL_VIEWPORT_HEIGHT
 } from '../../../config/misc';
-import envData from '../../../config/env.json';
 
 import '@freecodecamp/ui/dist/base.css';
 // preload common fonts
@@ -95,8 +94,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
       fetchUser,
       removeFlashMessage,
       onlineStatusChange,
-      serverStatusChange,
-      updateAllChallengesInfo
+      serverStatusChange
     },
     dispatch
   );
@@ -138,8 +136,7 @@ function DefaultLayout({
   superBlock,
   theme,
   user,
-  fetchUser,
-  updateAllChallengesInfo
+  fetchUser
 }: DefaultLayoutProps): JSX.Element {
   const { t } = useTranslation();
   const isMobileLayout = useMediaQuery({ maxWidth: MAX_MOBILE_WIDTH });
@@ -150,10 +147,8 @@ function DefaultLayout({
   const isExSmallViewportHeight = useMediaQuery({
     maxHeight: EX_SMALL_VIEWPORT_HEIGHT
   });
-  const { challengeEdges, certificateNodes } = useGetAllBlockIds();
   useEffect(() => {
     // componentDidMount
-    updateAllChallengesInfo({ challengeEdges, certificateNodes });
     if (!isSignedIn) {
       fetchUser();
     }
@@ -175,6 +170,8 @@ function DefaultLayout({
   };
 
   const useSystemTheme = fetchState.complete && isSignedIn === false;
+
+  const isJapanese = clientLocale === 'japanese';
 
   if (fetchState.pending) {
     return <Loader fullScreen={true} messageDelay={5000} />;
@@ -218,6 +215,34 @@ function DefaultLayout({
             rel='preload'
             type='font/woff'
           />
+          {isJapanese && (
+            <link
+              as='font'
+              crossOrigin='anonymous'
+              href={jpSansRegularURL}
+              rel='preload'
+              type='font/woff'
+            />
+          )}
+          {isJapanese && (
+            <link
+              as='font'
+              crossOrigin='anonymous'
+              href={jpSansLightURL}
+              rel='preload'
+              type='font/woff'
+            />
+          )}
+          {isJapanese && (
+            <link
+              as='font'
+              crossOrigin='anonymous'
+              href={jpSansBoldURL}
+              rel='preload'
+              type='font/woff'
+            />
+          )}
+
           <link
             as='font'
             crossOrigin='anonymous'
@@ -258,18 +283,18 @@ function DefaultLayout({
             />
           ) : null}
           <SignoutModal />
-          {isChallenge && !examInProgress && isRenderBreadcrumb ? (
-            <div className='breadcrumbs-demo'>
-              <BreadCrumb
-                block={block as string}
-                superBlock={superBlock as string}
-              />
-            </div>
-          ) : isExSmallViewportHeight ? (
-            <Spacer size='xxSmall' />
-          ) : (
-            <Spacer size='small' />
-          )}
+          {isChallenge &&
+            !examInProgress &&
+            (isRenderBreadcrumb ? (
+              <div className='breadcrumbs-demo'>
+                <BreadCrumb
+                  block={block as string}
+                  superBlock={superBlock as string}
+                />
+              </div>
+            ) : (
+              <Spacer size={isExSmallViewportHeight ? 'xxs' : 'xs'} />
+            ))}
           {fetchState.complete && children}
         </div>
         {showFooter && <Footer />}
@@ -277,50 +302,6 @@ function DefaultLayout({
     );
   }
 }
-
-// TODO: get challenge nodes directly rather than wrapped in edges
-const useGetAllBlockIds = () => {
-  const {
-    allChallengeNode: { edges: challengeEdges },
-    allCertificateNode: { nodes: certificateNodes }
-  }: {
-    allChallengeNode: AllChallengeNode;
-    allCertificateNode: { nodes: CertificateNode[] };
-  } = useStaticQuery(graphql`
-    query getBlockNode {
-      allChallengeNode(
-        sort: {
-          fields: [
-            challenge___superOrder
-            challenge___order
-            challenge___challengeOrder
-          ]
-        }
-      ) {
-        edges {
-          node {
-            challenge {
-              block
-              id
-            }
-          }
-        }
-      }
-      allCertificateNode {
-        nodes {
-          challenge {
-            certification
-            tests {
-              id
-            }
-          }
-        }
-      }
-    }
-  `);
-
-  return { challengeEdges, certificateNodes };
-};
 
 DefaultLayout.displayName = 'DefaultLayout';
 
